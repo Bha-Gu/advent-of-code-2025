@@ -1,5 +1,5 @@
-mod day2;
-use day2::{EX_INPUT1 as INPUT, p2};
+mod day3;
+use day3::{INPUT1 as INPUT, p2};
 // use day1::{INPUT1 as INPUT, p1_1, p1_2};
 
 fn main() {
