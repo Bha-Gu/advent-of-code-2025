@@ -1,8 +1,13 @@
+mod day1;
+mod day2;
 mod day3;
-use day3::{INPUT1 as INPUT, p2};
-// use day1::{INPUT1 as INPUT, p1_1, p1_2};
+mod template;
+
+use day3::{INPUT, p1, p2};
 
 fn main() {
+    let out = p1(INPUT);
+    println!("{out}");
     let out = p2(INPUT);
     println!("{out}");
 }
