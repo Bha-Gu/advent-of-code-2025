@@ -11,6 +11,7 @@ use day6::{INPUT, p1, p2};
 fn main() {
     let out = p1(INPUT);
     println!("{out}");
+
     let out = p2(INPUT);
     println!("{out}");
 }

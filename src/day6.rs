@@ -27,6 +27,36 @@ fn problem1(input: &str) -> usize {
     .iter()
     .sum()
 }
+
+enum CombineIter<I>
+where
+    I: Iterator<Item = Option<usize>>,
+{
+    Base(I),
+    Combined { prev: Box<CombineIter<I>>, next: I },
+}
+
+impl<I> Iterator for CombineIter<I>
+where
+    I: Iterator<Item = Option<usize>>,
+{
+    type Item = Option<usize>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            CombineIter::Base(iter) => iter.next(),
+
+            CombineIter::Combined { prev, next } => match (prev.next(), next.next()) {
+                (None, _) | (_, None) => None,
+                (Some(Some(p)), Some(Some(n))) => Some(Some(10 * p + n)),
+                (Some(Some(p)), Some(None)) => Some(Some(p)),
+                (Some(None), Some(Some(n))) => Some(Some(n)),
+                (Some(None), Some(None)) => Some(None),
+            },
+        }
+    }
+}
+
 fn problem2(input: &str) -> usize {
     let mut a = input.lines().rev();
 
@@ -34,21 +64,15 @@ fn problem2(input: &str) -> usize {
 
     let nums = a
         .rev()
-        .map(|line| {
-            line.chars()
-                .map(|c| c.to_string().parse::<usize>().ok())
-                .collect::<Vec<_>>()
-        })
-        .reduce(|prev, next| {
-            prev.into_iter()
-                .zip(next)
-                .map(|(p, n)| match (p, n) {
-                    (None, None) => None,
-                    (None, Some(n)) => Some(n),
-                    (Some(p), None) => Some(p),
-                    (Some(p), Some(n)) => Some(10 * p + n),
-                })
-                .collect()
+        .map(|line| line.chars().map(|c| c.to_string().parse::<usize>().ok()))
+        .fold(None, |prev, next| {
+            Some(match prev {
+                None => CombineIter::Base(next),
+                Some(prev_iter) => CombineIter::Combined {
+                    prev: Box::new(prev_iter),
+                    next,
+                },
+            })
         });
 
     nums.map_or(0, |nums| {
